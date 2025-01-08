@@ -11,23 +11,29 @@ class Wishlist extends StatefulWidget {
 }
 
 class _WishlistState extends State<Wishlist> {
+  // Create an instance of the WishlistBloc to manage state changes related to the wishlist
   final WishlistBloc wishlistBloc = WishlistBloc();
+
   @override
   void initState() {
+    // Dispatch the WishlistInitialEvent to load the initial state of the wishlist
     wishlistBloc.add(WishlistInitialEvent());
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // AppBar for the Wishlist screen
       appBar: AppBar(
         title: const Text(
-          'WishList Items',
+          'WishList Items', // Title displayed in the AppBar
         ),
       ),
       body: BlocConsumer<WishlistBloc, WishlistState>(
         bloc: wishlistBloc,
         listener: (context, state) {
+          // Show a snack bar when an item is removed from the wishlist
           if (state is WishlistRemovedActionState) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
@@ -36,14 +42,15 @@ class _WishlistState extends State<Wishlist> {
             );
           }
         },
-        listenWhen: (previousState, currentState) =>
-        currentState is WishlistActionState,
-        buildWhen: (previousState, currentState) =>
-        currentState is! WishlistActionState,
+        listenWhen: (previousState, currentState) => currentState
+            is WishlistActionState, // Only listen to action-related states
+        buildWhen: (previousState, currentState) => currentState
+            is! WishlistActionState, // Rebuild the widget only for non-action states
         builder: (context, state) {
           switch (state.runtimeType) {
             case WishlistSuccessState:
               final successState = state as WishlistSuccessState;
+              // Return a ListView displaying the wishlist items
               return ListView.builder(
                 itemCount: successState.wishlistItems.length,
                 itemBuilder: (context, index) {
@@ -54,7 +61,7 @@ class _WishlistState extends State<Wishlist> {
                 },
               );
             default:
-              return const SizedBox();
+              return const SizedBox(); // Empty space if no matching state
           }
         },
       ),
